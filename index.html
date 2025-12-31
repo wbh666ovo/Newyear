@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026新年开福袋</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+
+        body {
+            background-color: #fdf2f8;
+            background-image: linear-gradient(135deg, #fef7fb 0%, #fcf1f7 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #d43c33;
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(212, 60, 51, 0.2);
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* 福袋容器 - 调整布局，按钮在下方 */
+        .blessing-bag-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* 福袋样式 */
+        .blessing-bag {
+            width: 200px;
+            height: 250px;
+            background-color: #d43c33;
+            border-radius: 10px 10px 0 0;
+            position: relative;
+            box-shadow: 0 8px 16px rgba(212, 60, 51, 0.3);
+        }
+
+        .blessing-bag::before {
+            content: "";
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background-color: #b82c23;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .blessing-bag::after {
+            content: "福";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 4rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 抽奖按钮 - 移到福袋下方 */
+        .draw-btn {
+            width: 150px;
+            height: 45px;
+            background-color: #d43c33;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s;
+        }
+
+        .draw-btn:hover {
+            background-color: #b82c23;
+        }
+
+        .draw-btn:disabled {
+            background-color: #ccc;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        /* 信息区域 - 隐藏奖品列表，只保留次数 */
+        .info-area {
+            width: 350px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .count-info {
+            color: #d43c33;
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        /* 中奖弹窗 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 40px 30px;
+            border-radius: 15px;
+            text-align: center;
+            width: 320px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            animation: popup 0.5s ease;
+        }
+
+        @keyframes popup {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* 优化后的中奖弹窗样式 */
+        .congrats-title {
+            color: #d43c33;
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 4px rgba(212, 60, 51, 0.2);
+        }
+
+        .prize-card {
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px dashed;
+            margin-bottom: 30px;
+        }
+
+        /* 草莓蛋糕奖品样式 */
+        .prize-card.cake {
+            background-color: #fff0f3;
+            border-color: #ff6b81;
+        }
+
+        /* 私人订制祝福奖品样式 */
+        .prize-card.blessing {
+            background-color: #fff8e8;
+            border-color: #ff9f43;
+        }
+
+        /* 精选花束奖品样式 */
+        .prize-card.flower {
+            background-color: #e8fff8;
+            border-color: #00d2d3;
+        }
+
+        .prize-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .prize-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            line-height: 1.5;
+        }
+
+        .prize-card.cake .prize-name {
+            color: #ff6b81;
+        }
+
+        .prize-card.blessing .prize-name {
+            color: #ff9f43;
+        }
+
+        .prize-card.flower .prize-name {
+            color: #00d2d3;
+        }
+
+        .close-btn {
+            padding: 10px 25px;
+            background-color: #d43c33;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .close-btn:hover {
+            background-color: #b82c23;
+        }
+
+        /* 福袋打开动画 */
+        @keyframes openBag {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .bag-open {
+            animation: openBag 0.8s ease;
+        }
+
+        /* 密码验证弹窗样式 */
+        .password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 101;
+        }
+
+        .password-content {
+            background-color: #fff;
+            padding: 40px 30px;
+            border-radius: 15px;
+            text-align: center;
+            width: 320px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .password-content h3 {
+            color: #d43c33;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .password-input {
+            width: 100%;
+            height: 45px;
+            padding: 0 15px;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: #d43c33;
+        }
+
+        .password-btn {
+            padding: 10px 25px;
+            background-color: #d43c33;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+
+        .password-btn:hover {
+            background-color: #b82c23;
+        }
+
+        .error-tip {
+            color: #ff4757;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        /* 领取按钮样式 */
+        .receive-btn {
+            padding: 10px 25px;
+            background-color: #ff9f43;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .receive-btn:hover {
+            background-color: #ff8c00;
+        }
+
+        /* 祝福语弹窗样式 */
+        .blessing-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 102;
+        }
+
+        .blessing-content {
+            background-color: #fff;
+            padding: 40px 30px;
+            border-radius: 15px;
+            text-align: center;
+            width: 350px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            animation: popup 0.5s ease;
+        }
+
+        .blessing-content h2 {
+            color: #d43c33;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .blessing-text {
+            font-size: 1.2rem;
+            color: #333;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            white-space: pre-line;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>2026新年开福袋</h1>
+        <p>福袋一开，好运自来！</p>
+    </div>
+
+    <div class="blessing-bag-container" id="bagContainer">
+        <div class="blessing-bag" id="blessingBag"></div>
+        <button class="draw-btn" id="drawBtn">点击开袋</button>
+    </div>
+
+    <div class="info-area">
+        <div class="count-info">剩余抽奖次数：<span id="remainCount">3</span> 次</div>
+    </div>
+
+    <!-- 中奖弹窗 -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="congrats-title">🎉 恭喜！🎉</div>
+            <div class="prize-card" id="prizeCard">
+                <div class="prize-icon" id="prizeIcon">🎂</div>
+                <div class="prize-name" id="prizeName">王不好精选草莓蛋糕</div>
+            </div>
+            <button class="close-btn" id="closeBtn">收下这份好运</button>
+        </div>
+    </div>
+
+    <!-- 密码验证弹窗 -->
+    <div class="password-modal" id="passwordModal">
+        <div class="password-content">
+            <h3>王不好的生日（八位数字）：</h3>
+            <div class="error-tip" id="errorTip">输入错误，请重新输入！</div>
+            <input type="text" class="password-input" id="passwordInput" placeholder="请输入8位数字生日">
+            <div>
+                <button class="password-btn" id="confirmBtn">确认</button>
+                <button class="password-btn" id="cancelBtn">取消</button>
+            </div>
+            <!-- 领取按钮（默认隐藏） -->
+            <button class="receive-btn" id="receiveBtn" style="display: none;">领取祝福</button>
+        </div>
+    </div>
+
+    <!-- 祝福语弹窗 -->
+    <div class="blessing-modal" id="blessingModal">
+        <div class="blessing-content">
+            <h2>专属祝福</h2>
+            <div class="blessing-text" id="blessingText">祝mxy宝宝以及她的家人们2026年健康、平安、开心快乐！-----王不好</div>
+            <button class="close-btn" id="blessingCloseBtn">关闭</button>
+        </div>
+    </div>
+
+    <script>
+        // 奖品列表（新增emoji和样式类）
+        const prizes = [
+            { 
+                name: "王不好精选草莓蛋糕", 
+                color: "#ff6b81",
+                emoji: "🎂",
+                cardClass: "cake"
+            },
+            { 
+                name: "王不好私人订制祝福", 
+                color: "#ff9f43",
+                emoji: "💌",
+                cardClass: "blessing"
+            },
+            { 
+                name: "王不好精选花束", 
+                color: "#00d2d3",
+                emoji: "💐",
+                cardClass: "flower"
+            }
+        ];
+
+        const bag = document.getElementById('blessingBag');
+        const drawBtn = document.getElementById('drawBtn');
+        const remainCount = document.getElementById('remainCount');
+        const modal = document.getElementById('modal');
+        const prizeCard = document.getElementById('prizeCard');
+        const prizeIcon = document.getElementById('prizeIcon');
+        const prizeName = document.getElementById('prizeName');
+        const closeBtn = document.getElementById('closeBtn');
+        const bagContainer = document.getElementById('bagContainer');
+
+        // 密码验证相关元素
+        const passwordModal = document.getElementById('passwordModal');
+        const passwordInput = document.getElementById('passwordInput');
+        const confirmBtn = document.getElementById('confirmBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const errorTip = document.getElementById('errorTip');
+        const receiveBtn = document.getElementById('receiveBtn');
+        const blessingModal = document.getElementById('blessingModal');
+        const blessingCloseBtn = document.getElementById('blessingCloseBtn');
+        const blessingText = document.getElementById('blessingText');
+        
+        // 正确答案
+        const correctPassword = "20031204";
+        // 定制祝福语
+        const customBlessing = "祝mxy宝宝以及她的家人们2026年健康、平安、开心快乐！-----王不好";
+
+        let count = 3;
+        let isOpening = false;
+        let drawIndex = 0;
+        let currentPrize = null;
+
+        // 开福袋抽奖逻辑
+        function openBag() {
+            if (isOpening || count <= 0) return;
+
+            isOpening = true;
+            count--;
+            remainCount.innerText = count;
+            bag.classList.add('bag-open');
+
+            // 按索引顺序获取奖品
+            currentPrize = prizes[drawIndex];
+            drawIndex = (drawIndex + 1) % prizes.length;
+            
+            setTimeout(() => {
+                isOpening = false;
+                bag.classList.remove('bag-open');
+
+                // 判断是否是祝福奖品
+                if (currentPrize.name === "王不好私人订制祝福") {
+                    // 显示密码验证弹窗
+                    passwordModal.style.display = 'flex';
+                    // 清空输入框、错误提示，隐藏领取按钮
+                    passwordInput.value = "";
+                    errorTip.style.display = 'none';
+                    receiveBtn.style.display = 'none';
+                } else {
+                    // 其他奖品直接显示美化后的中奖弹窗
+                    updatePrizeModal(currentPrize);
+                    modal.style.display = 'flex';
+                }
+
+                if (count === 0) {
+                    drawBtn.disabled = true;
+                }
+            }, 1000);
+        }
+
+        // 更新中奖弹窗内容和样式
+        function updatePrizeModal(prize) {
+            // 清空原有样式类
+            prizeCard.className = 'prize-card';
+            // 添加当前奖品的样式类
+            prizeCard.classList.add(prize.cardClass);
+            // 设置emoji和奖品名称
+            prizeIcon.innerText = prize.emoji;
+            prizeName.innerText = prize.name;
+        }
+
+        // 密码确认按钮逻辑
+        confirmBtn.addEventListener('click', () => {
+            const inputVal = passwordInput.value.trim();
+            if (inputVal === correctPassword) {
+                // 密码正确，隐藏错误提示，显示领取按钮
+                errorTip.style.display = 'none';
+                receiveBtn.style.display = 'block';
+                // 禁用输入框和确认/取消按钮
+                passwordInput.disabled = true;
+                confirmBtn.disabled = true;
+                cancelBtn.disabled = true;
+            } else {
+                // 密码错误，显示提示
+                errorTip.style.display = 'block';
+            }
+        });
+
+        // 领取按钮点击逻辑
+        receiveBtn.addEventListener('click', () => {
+            // 隐藏密码弹窗，显示祝福语弹窗
+            passwordModal.style.display = 'none';
+            blessingText.innerText = customBlessing;
+            blessingModal.style.display = 'flex';
+            // 恢复密码弹窗元素状态（下次使用）
+            passwordInput.disabled = false;
+            confirmBtn.disabled = false;
+            cancelBtn.disabled = false;
+            receiveBtn.style.display = 'none';
+        });
+
+        // 祝福语弹窗关闭逻辑
+        blessingCloseBtn.addEventListener('click', () => {
+            blessingModal.style.display = 'none';
+            // 显示中奖弹窗（确认领取成功）
+            updatePrizeModal(currentPrize);
+            modal.style.display = 'flex';
+        });
+
+        // 密码取消按钮逻辑
+        cancelBtn.addEventListener('click', () => {
+            passwordModal.style.display = 'none';
+            // 恢复抽奖次数（取消则不算抽奖）
+            count++;
+            remainCount.innerText = count;
+            drawIndex--; // 恢复奖品索引
+            if (drawIndex < 0) drawIndex = prizes.length - 1;
+            // 恢复密码弹窗元素状态
+            passwordInput.disabled = false;
+            confirmBtn.disabled = false;
+            cancelBtn.disabled = false;
+            receiveBtn.style.display = 'none';
+        });
+
+        // 关闭中奖弹窗
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        // 绑定抽奖按钮事件
+        drawBtn.addEventListener('click', openBag);
+        bagContainer.addEventListener('click', () => {
+            if (!isOpening && count > 0) openBag();
+        });
+
+        // 支持回车确认密码
+        passwordInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !passwordInput.disabled) {
+                confirmBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
